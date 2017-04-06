@@ -1,21 +1,25 @@
+/**
+ * Represents a Maze.
+ * @constructor
+ * @param {string} size - The length of a square map.
+ * @param {string} mazeString - a string representation of the maze map.
+ */
 var Maze = function(size, mazeString) {
-    this.map = createMap(size);
-    fillMap(this.map, mazeString);
+    this.map = drawMap(createMap(size), mazeString);
     
     // create two indexed square map with defaults of zeros.
     function createMap(size) {
-        var map = new Array(size);
-        var i = size;
-        while(i--) {
-            map[i] = new Array(size);
-            map[i].fill(0);
-        }
-
-        return map;
+        return new Array(size)
+                    .fill(0)
+                    .map(function() {
+                        return new Array(size).fill(0);
+                    });
     };
     
-    // only reads 1s
-    function fillMap(map, mazeString) {
+    /*
+    * only reads 1s
+    */
+    function drawMap(map, mazeString) {
       var i = 0;
       if(mazeString.length!== size*size) return;
 
@@ -25,21 +29,32 @@ var Maze = function(size, mazeString) {
                 map[x][y] = 1;
           }
       }
-    };
 
+      return map;
+    };
+    
+    /*
+    *
+    */
     this.getMaze = function() {
         return this.map;
     };
-
+    
+    /** 
+    * returns a L-R row by row representation of the maze
+    */
     this.toString = function() {
-        var result = '';
-        for(var x=0; x< this.map.length; x++) {
-            var row = '|';
-            for(var y=0; y< this.map[x].length; y++) {
-                row += this.map[x][y] + '|';
-            }
-            result += row + '\n';
-        }
+        // reduce every row to string representing maze
+        var result = this.map.reduce(function(acc, row){
+            // reduce row to a string line
+            var rowString = row.reduce(function(acc, val){
+                return `${acc}${val}|`;
+            },'|');
+            // add new line before next row
+            return acc + rowString + '\n';
+             
+        }, '');
+
         console.log(result);
     };
 
@@ -83,6 +98,12 @@ Maze.prototype.moveUp = function(start) {
     return [x,y];
 };
 
+/*
+* Determines if hypothetical thing can move from start to end
+* by only moving till end or obstacle(denoted by a 1) in any direction
+* @param {Array} start - [x,y] point to start from
+* @param {Array} end - [x,y] point to try and end at
+*/
 Maze.prototype.isSolvable = function(start, end) {
     [s1,s2] = start;
     [e1,e2] = end;
