@@ -88,13 +88,32 @@ var Maze = function(size, mazeString) {
     };
 
     this.moveUp = function(start) {
-    [x,y] = start;
+        [x,y] = start;
 
-    while(x > 0 && this.map[x-1][y] != 1)
-        x--;
+        while(x > 0 && this.map[x-1][y] != 1)
+            x--;
 
-    return [x,y];
-};
+        return [x,y];
+    };
+    /*
+    * traces line on map
+    */
+    this.traceLine = function(start, end) {
+        [s1,s2] = start, [e1,e2] = end;
+        // if x is the same, we are traveling along row
+        if(s1 == e1) {
+            if(s2 > e2) [s2,e2] = [e2,s2];
+            while(s2 <= e2){
+                this.map[s1][s2++] = '*';
+            }
+        }
+        else {
+            if(s1 > e1) [s1,e1] = [e1,s1];
+            while(s1 <= e1){
+                this.map[s1++][s2] = '*';
+            }
+        }
+    }
 
     /*
     * Determines if hypothetical thing can move from start to end
@@ -114,13 +133,21 @@ var Maze = function(size, mazeString) {
         //mark visited
         this.map[s1][s2] = 'x';
 
-        return this.isSolvable(this.moveUp(start), end)
-        || this.isSolvable(this.moveLeft(start), end)
-        || this.isSolvable(this.moveDown(start), end)
-        || this.isSolvable(this.moveRight(start), end);
+        var moves = [this.moveUp(start),
+        this.moveDown(start),
+        this.moveLeft(start),
+        this.moveRight(start)];
+        
+        var i = 4;
+        while(i--){
+            solvable = this.isSolvable(moves[i], end);
+            if(solvable){
+                this.traceLine(start, moves[i]);
+                return true;
+            }
+        }
+        return false;
     };
 
 
 };
-
-//TODO: map path
