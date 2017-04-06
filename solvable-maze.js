@@ -58,38 +58,36 @@ var Maze = function(size, mazeString) {
         console.log(result);
     };
 
-};
+    this.moveRight = function(start) {
+        [x,y] = start;
+        var bound = this.map.length - 1;
 
-Maze.prototype.moveRight = function(start) {
-    [x,y] = start;
-    var bound = this.map.length - 1;
+        while(y < bound && this.map[x][y+1] != 1)
+            y++;
 
-    while(y < bound && this.map[x][y+1] != 1)
-        y++;
+        return [x,y];
+    };
 
-    return [x,y];
-};
+    this.moveLeft = function(start) {
+        [x,y] = start;
 
-Maze.prototype.moveLeft = function(start) {
-    [x,y] = start;
+        while(y > 0 && this.map[x][y-1] != 1)
+            y--;
 
-    while(y > 0 && this.map[x][y-1] != 1)
-        y--;
+        return [x,y];
+    };
 
-    return [x,y];
-};
+    this.moveDown = function(start) {
+        [x,y] = start;
+        var bound = this.map[0].length - 1;
 
-Maze.prototype.moveDown = function(start) {
-    [x,y] = start;
-    var bound = this.map[0].length - 1;
+        while(x < bound && this.map[x+1][y] != 1)
+            x++;
 
-    while(x < bound && this.map[x+1][y] != 1)
-        x++;
+        return [x,y];
+    };
 
-    return [x,y];
-};
-
-Maze.prototype.moveUp = function(start) {
+    this.moveUp = function(start) {
     [x,y] = start;
 
     while(x > 0 && this.map[x-1][y] != 1)
@@ -98,28 +96,31 @@ Maze.prototype.moveUp = function(start) {
     return [x,y];
 };
 
-/*
-* Determines if hypothetical thing can move from start to end
-* by only moving till end or obstacle(denoted by a 1) in any direction
-* @param {Array} start - [x,y] point to start from
-* @param {Array} end - [x,y] point to try and end at
-*/
-Maze.prototype.isSolvable = function(start, end) {
-    [s1,s2] = start;
-    [e1,e2] = end;
-    //solved
-    if(s1 === e1 && s2 === e2) return true;
+    /*
+    * Determines if hypothetical thing can move from start to end
+    * by only moving till end or obstacle(denoted by a 1) in any direction
+    * @param {Array} start - [x,y] point to start from
+    * @param {Array} end - [x,y] point to try and end at
+    */
+    this.isSolvable = function(start, end) {
+        [s1,s2] = start;
+        [e1,e2] = end;
+        //solved
+        if(s1 === e1 && s2 === e2) return true;
 
-    // visited
-    if(this.map[s1][s2] == 'x') return false;
-    
-    //mark visited
-    this.map[s1][s2] = 'x';
+        // visited
+        if(this.map[s1][s2] == 'x') return false;
 
-    return this.isSolvable(this.moveUp(start), end)
-    || this.isSolvable(this.moveLeft(start), end)
-    || this.isSolvable(this.moveDown(start), end)
-    || this.isSolvable(this.moveRight(start), end);
+        //mark visited
+        this.map[s1][s2] = 'x';
+
+        return this.isSolvable(this.moveUp(start), end)
+        || this.isSolvable(this.moveLeft(start), end)
+        || this.isSolvable(this.moveDown(start), end)
+        || this.isSolvable(this.moveRight(start), end);
+    };
+
+
 };
 
 //TODO: map path
