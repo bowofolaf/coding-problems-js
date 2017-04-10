@@ -1,0 +1,96 @@
+/*
+PROBLEM
+* Implement a data structure that can
+* add/insert item,
+* update item,
+* delete item,
+* get item all in constant time
+* iterate through items in order inserted also in constant time
+*/
+
+/*
+Combo of doubly-linked list and hashtable
+*/
+function DoublyLinkedHash() {
+  var hash = {};
+  var root = null;
+  var tail = null;
+  
+  // adds item by key only if it doesnt exist
+  this.add = function(key, item) {
+    if(!hash[key]) {
+      var newEntry = new ListNode(item)
+      hash[key] = newEntry;
+      
+      // if not empty list
+      if(tail) {
+        tail.next = newEntry; // link forward
+        newEntry.prev = tail; // link back
+        tail = newEntry;
+      } else {
+        // first entry, set it to root and tail
+        root = newEntry;
+        tail = root;
+      }
+    }
+  };
+  
+  // update item property nothing else has to change
+  this.update = function(key, item) {
+    if(hash[key]) {
+      hash[key].item = item;
+    }
+  };
+  
+  // fetch item property of linked list node attached to key
+  this.get = function(key) {
+    return hash[key].item;
+  };
+  
+  /*
+  if root, set next as root, if root is tail clear tail
+  if tail, set clear next property of prev node, and set it as tail
+  else its in the middle, connect the previous and next
+  */
+  this.delete = function(key) {
+    var toDelete = hash[key];
+    var next = toDelete.next;
+    var prev = toDelete.prev;
+    
+    if(root === toDelete) {
+      root = root.next;
+      if(!root) tail = null;
+    }
+    else if(tail === toDelete) {
+      [prev.next, tail] = [null, prev];
+    }
+    else {
+      prev.next = next;
+      next.prev = prev;
+    }
+    
+    hash[key] = null;
+    
+  };
+  
+  /*
+  iterate from root until null, 
+  and execute callback on item property
+  */
+  this.each = function(callback) {
+    var current = root;
+    while(current){
+      callback(current.item);
+      current = current.next;
+    }
+  };
+}
+
+/*
+constructor for doubly-linked list node
+*/
+function ListNode(obj) {
+  this.item = obj;
+  this.next = null;
+  this.prev = null;
+}
