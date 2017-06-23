@@ -1,3 +1,5 @@
+// amzn on-site interview question 4/3/17
+
 /**
  * Represents a Maze.
  * @constructor
